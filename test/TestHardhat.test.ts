@@ -1,8 +1,18 @@
 const assert = require('assert');
 import { ethers } from "hardhat";
+import { Contract } from 'ethers';
 
-describe("Greeter", function() {
-  it("Should return the new greeting once it's changed", async function() {
+describe("Greeter", () => {
+
+  let greeter: Contract;
+
+  beforeEach(async () => {
+    const Greeter = await ethers.getContractFactory("TestHardhat");
+    greeter = await Greeter.deploy("Hello, world!");
+    //await greeter.deployed();
+  });
+
+  it("Should return the new greeting once it's changed", async function () {
 
     const Greeter = await ethers.getContractFactory("TestHardhat");
     const greeter = await Greeter.deploy("Hello, world!");
