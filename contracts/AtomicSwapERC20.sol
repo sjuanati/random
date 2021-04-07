@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.0;
+pragma solidity 0.8.1;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract AutomicSwapERC20 {
+contract AtomicSwapERC20 {
     struct Swap {
         uint256 timelock;
         uint256 value;
@@ -31,7 +31,7 @@ contract AutomicSwapERC20 {
     modifier onlyInvalidSwaps(bytes32 _swapID) {
         require(
             swapStates[_swapID] == States.INVALID,
-            "AutomicSwapERC20: Swap is valid"
+            "AtomicSwapERC20: Swap is valid"
         );
         _;
     }
@@ -39,7 +39,7 @@ contract AutomicSwapERC20 {
     modifier onlyOpenSwaps(bytes32 _swapID) {
         require(
             swapStates[_swapID] == States.OPEN,
-            "AutomicSwapERC20: Swap is not opened"
+            "AtomicSwapERC20: Swap is not opened"
         );
         _;
     }
@@ -47,7 +47,7 @@ contract AutomicSwapERC20 {
     modifier onlyClosedSwaps(bytes32 _swapID) {
         require(
             swapStates[_swapID] == States.CLOSED,
-            "AutomicSwapERC20: Swap is not closed"
+            "AtomicSwapERC20: Swap is not closed"
         );
         _;
     }
@@ -55,7 +55,7 @@ contract AutomicSwapERC20 {
     modifier onlyExpirableSwaps(bytes32 _swapID) {
         require(
             swaps[_swapID].timelock <= _getNow(),
-            "AutomicSwapERC20: Swap is not expired"
+            "AtomicSwapERC20: Swap is not expired"
         );
         _;
     }
@@ -64,7 +64,7 @@ contract AutomicSwapERC20 {
         // TODO: Require _secretKey length to conform to the spec
         require(
             swaps[_swapID].secretLock == sha256(abi.encodePacked(_secretKey)),
-            "AutomicSwapERC20: Invalid secret key"
+            "AtomicSwapERC20: Invalid secret key"
         );
         _;
     }
@@ -81,11 +81,11 @@ contract AutomicSwapERC20 {
         IERC20 contractInstance = IERC20(_contractAddress);
         require(
             _value <= contractInstance.allowance(msg.sender, address(this)),
-            "AutomicSwapERC20.createProposal: Caller has not enough balance"
+            "AtomicSwapERC20.createProposal: Caller has not enough balance"
         );
         require(
             contractInstance.transferFrom(msg.sender, address(this), _value),
-            "AutomicSwapERC20.createProposal: Transaction failed"
+            "AtomicSwapERC20.createProposal: Transaction failed"
         );
 
         // Store the details of the swap.
@@ -118,7 +118,7 @@ contract AutomicSwapERC20 {
         IERC20 contractInstance = IERC20(swap.contractAddress);
         require(
             contractInstance.transfer(swap.withdrawTrader, swap.value),
-            "AutomicSwapERC20.claimFunds: Transaction failed"
+            "AtomicSwapERC20.claimFunds: Transaction failed"
         );
 
         emit CloseProposal(_swapID, _secretKey);
@@ -137,7 +137,7 @@ contract AutomicSwapERC20 {
         IERC20 contractInstance = IERC20(swap.contractAddress);
         require(
             contractInstance.transfer(swap.trader, swap.value),
-            "AutomicSwapERC20.refundFunds: Transaction failed"
+            "AtomicSwapERC20.refundFunds: Transaction failed"
         );
 
         emit ExpireProposal(_swapID);
