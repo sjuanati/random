@@ -130,14 +130,14 @@ contract("DAO", (accounts) => {
     });
 
     it("vote(): should not vote - voting period has ended", async () => {
-        time.increase(time.duration.days(8));
+        await time.increase(time.duration.days(8));
         await expectRevert(
             dao.vote(0, ANSWER.Yes, {from: participant2}),
             'voting period has ended'
         );
     });
 
-    it.only("vote(): should vote", async () => {
+    it("vote(): should vote", async () => {
         await dai.approve(dao.address, ether('300'), { from: participant1 });
         await dao.deposit(ether('300'), { from: participant1 });
         
